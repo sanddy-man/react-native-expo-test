@@ -1,0 +1,23 @@
+import Splash from "./splash/Splash";
+import Home from "./home/Home";
+import Login from "./login/Login";
+import Register from "./register/Register";
+import Register1 from "./register/Register1";
+import Register2 from "./register/Register2";
+import Register3 from "./register/Register3";
+import Register4 from "./register/Register4";
+import Dashboard from "./dashboard/Dashboard";
+import Education from "./education/Education";
+import HouseDetail from "./house/HouseDetail";
+import FilterResult from "./filter/FilterResult";
+import LibrarySearch from "./library/LibrarySearch";
+import Settings from "./profile/Settings";
+import LogMoodOne from "./wellness/LogMoodOne";
+import LogMoodTwo from "./wellness/LogMoodTwo";
+import LogMoodResult from "./wellness/LogMoodResult";
+import AddMedication from "./profile/AddMedication";
+import AddDiagnosis from "./profile/AddDiagnosis";
+import AddDoctor from "./profile/AddDoctor";
+import ChangePassword from "./profile/ChangePassword";
+
+export { Home, Login, Register, Register1, Register2, Register3, Register4, Dashboard, Education, HouseDetail, FilterResult, LibrarySearch, Settings, Splash, LogMoodOne, LogMoodTwo, LogMoodResult, AddMedication, AddDiagnosis, AddDoctor, ChangePassword };

@@ -1,0 +1,57 @@
+{
+  "name": "qolty-nicu",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "babel-eslint": "^8.2.3",
+    "babel-jest": "^23.0.1",
+    "eslint": "^4.19.1",
+    "eslint-plugin-eslint-comments": "^2.0.2",
+    "eslint-plugin-flowtype": "^2.49.3",
+    "eslint-plugin-prettier": "^2.6.0",
+    "eslint-plugin-react": "^7.8.2",
+    "eslint-plugin-react-native": "^3.2.1",
+    "husky": "^0.14.3",
+    "jest-expo": "27.0.1",
+    "prettier": "1.12.1",
+    "react-test-renderer": "16.3.0-alpha.1"
+  },
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "eject": "expo eject",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "test": "jest",
+    "prettify": "prettier --write --tab-width=2 \"**/*.js\"",
+    "lint": "eslint __tests__ src App.js Routes.js",
+    "precommit": "yarn test && yarn prettify && yarn lint"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "transformIgnorePatterns": [
+      "node_modules/(?!(jest-)?react-native|react-navigation|expo|native-base-shoutem-theme|react-native-multi-slider)/"
+    ]
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^6.3.1",
+    "@ptomasroos/react-native-multi-slider": "^0.0.14",
+    "expo": "^32.0.0",
+    "moment": "^2.23.0",
+    "native-base": "^2.4.2",
+    "numeral": "^2.0.6",
+    "react": "16.5.0",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
+    "react-native-actionsheet": "^2.4.2",
+    "react-native-circular-progress": "^1.1.0",
+    "react-native-expo-image-cache": "^3.2.0",
+    "react-native-gridview": "^0.1.2",
+    "react-native-keyboard-aware-scroll-view": "^0.5.0",
+    "react-native-modal": "^5.4.0",
+    "react-native-modal-datetime-picker": "^7.4.0",
+    "react-native-swipe-gestures": "^1.0.3",
+    "react-native-swipeout": "^2.3.6",
+    "react-native-vector-icons": "^6.1.0",
+    "react-navigation": "^2.2.4"
+  }
+}
