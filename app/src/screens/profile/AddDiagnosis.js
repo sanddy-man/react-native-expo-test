@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Button, Text, Header, Title, Right, Left, Body, Form, Content, Item } from 'native-base';
-import { View, ImageBackground, Image, TouchableHighlight } from "react-native";
+import { View, ImageBackground, Image, TouchableHighlight, Alert } from "react-native";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { UnderlinedInput } from "../../components/inputs";
 import { getlang } from '../../config/constants';
@@ -21,7 +21,8 @@ class AddDiagnosis extends Component {
     super(props);
     this.state = {}
     this.diagnosis = {
-      "name": ""
+      "diagnosis_id": props.navigation.state.params.item ? props.navigation.state.params.item.diagnosis_id : '',
+      "name": props.navigation.state.params.item ? props.navigation.state.params.item.name : ''
     };
     this.updateName = function(text){
       this.diagnosis.name = text;
@@ -34,8 +35,6 @@ class AddDiagnosis extends Component {
     })
   }
 
-  //props.navigation.state.params.updateMoodLog
-
   render() {
     const {item} = this.props.navigation.state.params
     const {lang} = this.state
@@ -43,14 +42,14 @@ class AddDiagnosis extends Component {
       <Container>
         <Header>
           <Left>
-            <Button onPress={() => this.props.navigation.goBack()} transparent>
-              <Text>{multilingual.CANCEL[lang]}</Text>
-            </Button>
           </Left>
           <Body>
             <Title>{item ? 'Edit Diagnosis' : 'Add Diagnosis'}</Title>
           </Body>
           <Right>
+            <Button onPress={() => this.props.navigation.goBack()} >
+              <Text>{multilingual.CANCEL[lang]}</Text>
+            </Button>
           </Right>
         </Header>
         <Content style={styles.content}>
@@ -67,8 +66,8 @@ class AddDiagnosis extends Component {
             <View style={styles.separator} />
 
             <Button rounded onPress={() => item
-              ? updateDiagnosis(this.diagnosis, this.props)
-              : addDiagnosis(this.diagnosis, this.props)
+              ? this.diagnosis.name ? updateDiagnosis(this.diagnosis, this.props) : Alert.alert('Field should not be empty.')
+              : this.diagnosis.name ? addDiagnosis(this.diagnosis, this.props) : Alert.alert('Field should not be empty.')
             }>
               <Text>{multilingual.SAVE[lang]}</Text>
             </Button>

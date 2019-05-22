@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Button, Text, Header, Title, Right, Left, Body, Form, Content } from 'native-base';
-import { View, ImageBackground, Image, TouchableHighlight } from "react-native";
+import { View, ImageBackground, Image, TouchableHighlight, Alert } from "react-native";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { UnderlinedInput } from "../../components/inputs";
 import { getlang } from '../../config/constants';
@@ -21,12 +21,14 @@ class AddMedication extends Component {
     super(props);
     this.state = {}
     this.medication = {
-      "prescriptionName": props.navigation.state.params.item ? props.navigation.state.params.item.prescriptionName : '',
+      "medication_id": props.navigation.state.params.item ? props.navigation.state.params.item.medication_id : '',
+      "prescription_name": props.navigation.state.params.item ? props.navigation.state.params.item.prescription_name : '',
       "dosage": props.navigation.state.params.item ? props.navigation.state.params.item.dosage : '',
-      "dosageInstructions": props.navigation.state.params.item ? props.navigation.state.params.item.dosageInstructions : '',
+      "dosage_instructions": props.navigation.state.params.item ? props.navigation.state.params.item.dosage_instructions : ''
     };
+
     this.updatePrescriptionName = function(text){
-      this.medication.prescriptionName = text;
+      this.medication.prescription_name = text;
     }
 
     this.updateDosage = function(text){
@@ -34,7 +36,7 @@ class AddMedication extends Component {
     }
 
     this.updateDosageInstructions = function(text){
-      this.medication.dosageInstructions = text;
+      this.medication.dosage_instructions = text;
     }
   };
 
@@ -53,14 +55,14 @@ class AddMedication extends Component {
       <Container>
         <Header>
           <Left>
-            <Button onPress={() => this.props.navigation.goBack()} transparent>
-              <Text>{multilingual.CANCEL[lang]}</Text>
-            </Button>
           </Left>
           <Body>
             <Title>{item ? 'Edit Medication' : 'Add Medication'}</Title>
           </Body>
           <Right>
+            <Button onPress={() => this.props.navigation.goBack()} transparent>
+              <Text>{multilingual.CANCEL[lang]}</Text>
+            </Button>
           </Right>
         </Header>
         <Content style={styles.content}>
@@ -70,7 +72,7 @@ class AddMedication extends Component {
             </View>
             <UnderlinedInput
               autoFocus
-              defaultValue={item && item.prescriptionName}
+              defaultValue={item && item.prescription_name}
               label={multilingual.PRESCRIPTION_NAME[lang]}
               onChangeText={(text) => this.updatePrescriptionName(text)}
             />
@@ -90,15 +92,16 @@ class AddMedication extends Component {
               <Text>{multilingual.DOSING_INSTRUCTIONS[lang]}</Text>
             </View>
             <UnderlinedInput
-              defaultValue={item && item.dosageInstructions}
+              defaultValue={item && item.dosage_instructions}
               label={multilingual.EX_TWICE_A_DAY[lang]}
               onChangeText={(text) => this.updateDosageInstructions(text)}
             />
             <View style={styles.separator} />
 
-            <Button rounded onPress={() => item
-              ? editMedication(this.medication, this.props)
-              : addMedication(this.medication, this.props)
+            <Button rounded onPress={() => item ? this.medication.prescription_name && this.medication.dosage && this.medication.dosage_instructions
+                                          ? editMedication(this.medication, this.props) : Alert.alert("Field should not be empty.")
+                                          : this.medication.prescription_name && this.medication.dosage && this.medication.dosage_instructions
+                                          ? addMedication(this.medication, this.props) : Alert.alert("Field should not be empty.")
             }>
               <Text>{multilingual.SAVE[lang]}</Text>
             </Button>

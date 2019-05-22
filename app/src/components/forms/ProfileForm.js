@@ -79,7 +79,7 @@ function ProfileForm(props) {
             <Icon active name="trash" />
           </Button>}]} backgroundColor='transparent' buttonWidth={46}>
             <ListItem onPress={() => props.onEditMedication(medication)}>
-              <Text>{medication.prescriptionName}, {medication.dosage}, {medication.dosageInstructions}</Text>
+              <Text>{medication.prescription_name}, {medication.dosage}, {medication.dosage_instructions}</Text>
             </ListItem>
           </Swipeout>
         )}

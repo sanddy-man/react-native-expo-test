@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Button, Text, Header, Title, Right, Left, Body, Form, Content } from 'native-base';
-import { View, ImageBackground, Image, TouchableHighlight } from "react-native";
+import { View, ImageBackground, Image, TouchableHighlight, Alert } from "react-native";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { UnderlinedInput } from "../../components/inputs";
 import { getlang } from '../../config/constants';
@@ -21,6 +21,7 @@ class AddDoctor extends Component {
     super(props);
     this.state = {}
     this.doctor = {
+      "doctor_id": props.navigation.state.params.item && props.navigation.state.params.item.doctor_id,
       "type": props.navigation.state.params.item && props.navigation.state.params.item.type,
       "name": props.navigation.state.params.item && props.navigation.state.params.item.name,
       "number": props.navigation.state.params.item && props.navigation.state.params.item.number,
@@ -53,14 +54,14 @@ class AddDoctor extends Component {
       <Container>
         <Header>
           <Left>
-            <Button onPress={() => this.props.navigation.goBack()} transparent>
-              <Text>{multilingual.CANCEL[lang]}</Text>
-            </Button>
           </Left>
           <Body>
             <Title>{item ? 'Edit Doctor' : 'Add Doctor'}</Title>
           </Body>
           <Right>
+            <Button onPress={() => this.props.navigation.goBack()} transparent>
+              <Text>{multilingual.CANCEL[lang]}</Text>
+            </Button>
           </Right>
         </Header>
         <Content style={styles.content}>
@@ -96,9 +97,10 @@ class AddDoctor extends Component {
             />
             <View style={styles.separator} />
 
-            <Button rounded onPress={() => item
-              ? editDoctor(this.doctor, this.props)
-              : addDoctor(this.doctor, this.props)
+            <Button rounded onPress={() => item ? this.doctor.type && this.doctor.name && this.doctor.number
+                                          ? editDoctor(this.doctor, this.props) : Alert.alert("Field should not be empty.")
+                                          : this.doctor.type && this.doctor.name && this.doctor.number
+                                          ? addDoctor(this.doctor, this.props) : Alert.alert("Field should not be empty.")
             }>
               <Text>{multilingual.SAVE[lang]}</Text>
             </Button>

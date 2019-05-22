@@ -37,7 +37,7 @@ type Profile struct {
 	Dob   string `json:"dob" binding:"required"`
 }
 
-type login struct {
+type Login struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
@@ -46,6 +46,11 @@ type changePasswordRequest struct {
 	OldPassword string `json:"oldPassword" binding:"required"`
 	NewPassword string `json:"newPassword" binding:"required"`
 	Email       string `json:"email" binding:"required"`
+}
+
+type DiagnosisRequest struct {
+	DiagnosisId string `json:"diagnosisId" binding:"required"`
+	Diagnosis string `json:"diagnosis" binding:"required"`
 }
 
 type User struct {
@@ -101,6 +106,20 @@ type TodoRequest struct {
 type CheckListRequest struct {
 	Check_list_id uint64 `json:"check_list_id"`
 	Name          string `json:"name"`
+}
+
+type MedicationRequest struct {
+	MedicationId string `json:"medicationId" binding:"required"`
+	PrescriptionName string `json:"prescriptionName" binding:"required"`
+	Dosage string `json:"dosage" binding:"required"`
+	DosageInstructions string `json:"dosageInstructions" binding:"required"`
+}
+
+type DoctorRequest struct {
+	DoctorId string `json:"doctorId" binding:"required"`
+	DoctorType string `json:"doctorType" binding:"required"`
+	DoctorName string `json:"doctorName" binding:"required"`
+	DoctorNumber string `json:"doctorNumber" binding:"required"`
 }
 
 type TestResponse struct {
@@ -225,6 +244,263 @@ func validateStudyID(c *gin.Context) {
 	c.JSON(200, gin.H{"error": nil})
 }
 
+func addDiagnosis(c *gin.Context) {
+	var request DiagnosisRequest
+
+	claims := jwt.ExtractClaims(c)
+	userId := claims["id"]
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Format Diagnosis."})
+		log.Println(err)
+		return
+	}
+	diagnosis := request.Diagnosis
+
+	stmtIns, err := db.Prepare("INSERT INTO Diagnosis (user_id, name) VALUES (?, ?)")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+	defer stmtIns.Close()
+
+	_, err = stmtIns.Exec(userId, diagnosis)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+}
+
+func editDiagnosis(c *gin.Context) {
+	var request DiagnosisRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Format Diagnosis"})
+		log.Println(err)
+		return
+	}
+	diagnosisId := request.DiagnosisId
+	diagnosis := request.Diagnosis
+
+	stmtEdit, err := db.Prepare("UPDATE Diagnosis SET name=? WHERE diagnosis_id=?")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+	defer stmtEdit.Close()
+
+	_, err = stmtEdit.Exec(diagnosis, diagnosisId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+ }
+
+func delDiagnosis(c *gin.Context) {
+	var request DiagnosisRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Format Diagnosis."})
+		log.Println(err)
+		return
+	}
+
+	diagnosisId := request.DiagnosisId
+
+	stmtDel, err := db.Prepare("DELETE FROM Diagnosis WHERE diagnosis_id=?")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+	defer stmtDel.Close()
+
+	_, err = stmtDel.Exec(diagnosisId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+}
+
+func addMedication (c *gin.Context) {
+	var request MedicationRequest
+
+	claims := jwt.ExtractClaims(c)
+	userId := claims["id"]
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Format Medication."})
+		log.Println(err)
+		return
+	}
+
+	prescriptionName := request.PrescriptionName
+	dosage := request.Dosage
+	dosageInstructions := request.DosageInstructions
+
+	stmtIns, err := db.Prepare("INSERT INTO Medication (user_id, prescription_name, dosage, dosage_instructions) VALUES (?, ?, ?, ?)")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+	defer stmtIns.Close()
+
+	_, err = stmtIns.Exec(userId, prescriptionName, dosage, dosageInstructions)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+}
+
+func editMedication (c *gin.Context) {
+	var request MedicationRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Format Medication."})
+		log.Println(err)
+		return
+	}
+
+	medicationId := request.MedicationId
+	prescriptionName := request.PrescriptionName
+	dosage := request.Dosage
+	dosageInstructions := request.DosageInstructions
+
+	stmtEdit, err := db.Prepare("UPDATE Medication SET prescription_name=?, dosage=?, dosage_instructions=? WHERE medication_id=?")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+	defer stmtEdit.Close()
+
+	_, err = stmtEdit.Exec(prescriptionName, dosage, dosageInstructions, medicationId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+}
+
+func delMedication(c *gin.Context) {
+	var request MedicationRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Format Diagnosis."})
+		log.Println(err)
+		return
+	}
+
+	medicationId := request.MedicationId
+
+	stmtDel, err := db.Prepare("DELETE FROM Medication WHERE medication_id=?")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+	defer stmtDel.Close()
+
+	_, err = stmtDel.Exec(medicationId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+}
+
+func addDoctor (c *gin.Context) {
+	var request DoctorRequest
+
+	claims := jwt.ExtractClaims(c)
+	userId := claims["id"]
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Format Medication."})
+		log.Println(err)
+		return
+	}
+
+	doctorType := request.DoctorType
+	doctorName := request.DoctorName
+	doctorNumber := request.DoctorNumber
+
+	stmtIns, err := db.Prepare("INSERT INTO Doctor (user_id, type, name, number) VALUES (?, ?, ?, ?)")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+	defer stmtIns.Close()
+
+	_, err = stmtIns.Exec(userId, doctorType, doctorName, doctorNumber)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+}
+
+func editDoctor (c *gin.Context) {
+	var request DoctorRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Format Medication."})
+		log.Println(err)
+		return
+	}
+
+	doctorId := request.DoctorId
+	doctorType := request.DoctorType
+	doctorName := request.DoctorName
+	doctorNumber := request.DoctorNumber
+
+	stmtEdit, err := db.Prepare("UPDATE Doctor SET type=?, name=?, number=? WHERE doctor_id=?")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+	defer stmtEdit.Close()
+
+	_, err = stmtEdit.Exec(doctorType, doctorName, doctorNumber, doctorId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+}
+
+func delDoctor(c *gin.Context) {
+	var request DoctorRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Format Diagnosis."})
+		log.Println(err)
+		return
+	}
+
+	doctorId := request.DoctorId
+
+	stmtDel, err := db.Prepare("DELETE FROM Doctor WHERE doctor_id=?")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+	defer stmtDel.Close()
+
+	_, err = stmtDel.Exec(doctorId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+}
+
 func changePassword(c *gin.Context) {
 	var request changePasswordRequest
 
@@ -278,6 +554,27 @@ func changePassword(c *gin.Context) {
 	}
 
 	c.JSON(201, gin.H{"error": nil})
+}
+
+func myHandler(c *gin.Context) {
+	var request Login
+
+	//var res []byte
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid parameterssdsd."})
+		log.Println(c.ContentType())
+		return
+	}
+
+	//s := string(res[:])
+	log.Println(c.ContentType())
+	log.Println(request.Email)
+	log.Println(request.Password)
+
+	//c.JSON(200, request.Password)
+
+	// log.Println(strings.ToLower(request.Email))
+	return
 }
 
 func registerUser(c *gin.Context) {
@@ -442,6 +739,18 @@ func loadData(tableName string, userId string) ([]map[string]string, error) {
 		extraConditions = " where user_id='" + userId + "' "
 	}
 
+	if tableName == "Diagnosis" {
+		extraConditions = " where user_id='" + userId + "' "
+	}
+
+	if tableName == "Medication" {
+		extraConditions = " where user_id='" + userId + "' "
+	}
+
+	if tableName == "Doctor" {
+		extraConditions = " where user_id='" + userId + "' "
+	}
+
 	rows, err := db.Query("SELECT * FROM " + tableName + extraConditions)
 	if err != nil {
 		return content, err
@@ -596,6 +905,27 @@ func getContent(c *gin.Context) {
 		return
 	}
 
+	diagnosis, err := loadData("Diagnosis", userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+
+	medications, err := loadData("Medication", userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+
+	doctors, err := loadData("Doctor", userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+		log.Println(err)
+		return
+	}
+
 	profile, err := loadProfile(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
@@ -634,7 +964,7 @@ func getContent(c *gin.Context) {
 	categories[resourceCategoriesTableName] = resourceCategories
 	categories[wellnessCategoriesTableName] = wellnessCategories
 
-	c.JSON(200, gin.H{"content": content, "checkList": checkList, "todoList": todoList, "moodLog": moodLog, "categories": categories, "profile": profile})
+	c.JSON(200, gin.H{"content": content, "checkList": checkList, "todoList": todoList, "moodLog": moodLog, "categories": categories, "profile": profile, "diagnosis": diagnosis, "medications": medications, "doctors": doctors})
 }
 
 func moodLog(c *gin.Context) {
@@ -1034,7 +1364,7 @@ func main() {
 		log.Fatal(http.ListenAndServe(":80", http.HandlerFunc(redirToHTTPS)))
 	}()
 
-	db, err = sql.Open("mysql", "root:password@/qolty")
+	db, err = sql.Open("mysql", "root:1987211!@/qolty")
 	if err != nil {
 		log.Fatal("Error opening mysql DB: ", err.Error())
 	}
@@ -1076,7 +1406,7 @@ func main() {
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
-			var loginVals login
+			var loginVals Login
 			if err := c.ShouldBindJSON(&loginVals); err != nil {
 				return "", jwt.ErrMissingLoginValues
 			}
@@ -1169,6 +1499,15 @@ func main() {
 		nicu_router.POST("/updateTodoList", updateTodoList)
 		nicu_router.POST("/createCheckList", createCheckList)
 		nicu_router.POST("/changePassword", changePassword)
+		nicu_router.POST("/addDiagnosis", addDiagnosis)
+		nicu_router.POST("/delDiagnosis", delDiagnosis)
+		nicu_router.POST("/editDiagnosis", editDiagnosis)
+		nicu_router.POST("/addMedication", addMedication)
+		nicu_router.POST("/editMedication", editMedication)
+		nicu_router.POST("/delMedication", delMedication)
+		nicu_router.POST("/addDoctor", addDoctor)
+		nicu_router.POST("/editDoctor", editDoctor)
+		nicu_router.POST("/delDoctor", delDoctor)
 	}
 
 	if *isLocal {

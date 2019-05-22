@@ -80,6 +80,9 @@ class Dashboard extends Component {
                 checkList: responseJson.checkList,
                 todoList: responseJson.todoList,
                 moodLog: responseJson.moodLog,
+                diagnosis: responseJson.diagnosis,
+                medications: responseJson.medications,
+                doctors: responseJson.doctors,
                 libraryCategories: [{"categories":responseJson.categories["LibraryCategory"]}],
                 resourceCategories: [{"categories":responseJson.categories["ResourceCategory"]}],
                 wellnessCategories: [{"categories":responseJson.categories["WellnessCategory"]}],
@@ -87,6 +90,7 @@ class Dashboard extends Component {
               });
             })
             // AsyncStorage.setItem('content', JSON.stringify(responseJson.content));
+            // console.log( responseJson.medications);
           } else {
             this.props.navigation.reset([NavigationActions.navigate({ routeName: '_home' })], 0);
           }
@@ -452,6 +456,24 @@ class Dashboard extends Component {
     this.setState(prevState => ({
       medications: [...prevState.medications, medicationData]
     }));
+    SecureStore.getItemAsync("jwt").then((value) => {
+      if (value != null){
+        fetch(Constants.API_ROOT + '/addMedication', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + value,
+          },
+          body: JSON.stringify({
+            medicationId: ' ',
+            prescriptionName: medicationData.prescription_name,
+            dosage: medicationData.dosage,
+            dosageInstructions: medicationData.dosage_instructions,
+          }),
+        });
+      }
+    }).done();
   }
 
   onAddMedication() {
@@ -462,7 +484,25 @@ class Dashboard extends Component {
     const newData = this.state.medications.filter(val => val !== item)
     this.setState({
       medications: newData
-    })
+    });
+    SecureStore.getItemAsync("jwt").then((value) => {
+      if (value != null){
+        fetch(Constants.API_ROOT + '/delMedication', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + value,
+          },
+          body: JSON.stringify({
+            medicationId: item.medication_id,
+            prescriptionName: item.prescription_name,
+            dosage: item.dosage,
+            dosageInstructions: item.dosage_instructions,
+          }),
+        });
+      }
+    }).done();
   }
 
   editMedication(medicationData, index) {
@@ -471,6 +511,24 @@ class Dashboard extends Component {
     this.setState({
       medications: data
     })
+    SecureStore.getItemAsync("jwt").then((value) => {
+      if (value != null){
+        fetch(Constants.API_ROOT + '/editMedication', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + value,
+          },
+          body: JSON.stringify({
+            medicationId: medicationData.medication_id,
+            prescriptionName: medicationData.prescription_name,
+            dosage: medicationData.dosage,
+            dosageInstructions: medicationData.dosage_instructions,
+          }),
+        });
+      }
+    }).done();
   }
 
   onEditMedication(item) {
@@ -486,21 +544,69 @@ class Dashboard extends Component {
     this.setState(prevState => ({
       diagnosis: [...prevState.diagnosis, diagnosisData]
     }));
+    SecureStore.getItemAsync("jwt").then((value) => {
+      if (value != null){
+        fetch(Constants.API_ROOT + '/addDiagnosis', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + value,
+          },
+          body: JSON.stringify({
+            diagnosisId: ' ',
+            diagnosis: diagnosisData.name,
+          }),
+        });
+      }
+    }).done();
   }
 
   editDiagnosis(diagnosisData, index) {
-    const data = [...this.state.diagnosis]
-    data[index] = diagnosisData
+    const data = [...this.state.diagnosis];
+    data[index] = diagnosisData;
     this.setState({
       diagnosis: data
-    })
+    });
+    SecureStore.getItemAsync("jwt").then((value) => {
+      if (value != null){
+        fetch(Constants.API_ROOT + '/editDiagnosis', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + value,
+          },
+          body: JSON.stringify({
+            diagnosisId: diagnosisData.diagnosis_id,
+            diagnosis: diagnosisData.name,
+          }),
+        });
+      }
+    }).done();
   }
 
   delDiagnosis(item) {
     const newData = this.state.diagnosis.filter(val => val !== item)
     this.setState({
       diagnosis: newData
-    })
+    });
+    SecureStore.getItemAsync("jwt").then((value) => {
+      if (value != null){
+        fetch(Constants.API_ROOT + '/delDiagnosis', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + value,
+          },
+          body: JSON.stringify({
+            diagnosisId: item.diagnosis_id,
+            diagnosis: item.name
+          }),
+        });
+      }
+    }).done();
   }
 
   onAddDiagnosis() {
@@ -520,6 +626,24 @@ class Dashboard extends Component {
     this.setState(prevState => ({
       doctors: [...prevState.doctors, doctorData]
     }));
+    SecureStore.getItemAsync("jwt").then((value) => {
+      if (value != null){
+        fetch(Constants.API_ROOT + '/addDoctor', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + value,
+          },
+          body: JSON.stringify({
+            doctorId: ' ',
+            doctorType: doctorData.type,
+            doctorName: doctorData.name,
+            doctorNumber: doctorData.number,
+          }),
+        });
+      }
+    }).done();
   }
 
   editDoctor(doctorData, index) {
@@ -527,7 +651,25 @@ class Dashboard extends Component {
     data[index] = doctorData
     this.setState({
       doctors: data
-    })
+    });
+    SecureStore.getItemAsync("jwt").then((value) => {
+      if (value != null){
+        fetch(Constants.API_ROOT + '/editDoctor', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + value,
+          },
+          body: JSON.stringify({
+            doctorId: doctorData.doctor_id,
+            doctorType: doctorData.type,
+            doctorName: doctorData.name,
+            doctorNumber: doctorData.number
+          }),
+        });
+      }
+    }).done();
   }
 
   onAddDoctor() {
@@ -547,7 +689,25 @@ class Dashboard extends Component {
     const newData = this.state.doctors.filter(val => val !== item)
     this.setState({
       doctors: newData
-    })
+    });
+    SecureStore.getItemAsync("jwt").then((value) => {
+      if (value != null){
+        fetch(Constants.API_ROOT + '/delDoctor', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + value,
+          },
+          body: JSON.stringify({
+            doctorId: item.doctor_id,
+            doctorType: item.type,
+            doctorName: item.name,
+            doctorNumber: item.number
+          }),
+        });
+      }
+    }).done();
   }
 
   save() {
@@ -724,7 +884,9 @@ class Dashboard extends Component {
                   <TabItems.BottomMenuItem
                     active={this.state.currentPage === 5}
                     icon="user"
-                    source={require('../../assets/images/inactive-profile.png')}
+                    source = {this.state.currentPage === 5
+                      ? require('../../assets/images/active-profile.png')
+                      : require('../../assets/images/inactive-profile.png')}
                     text={multilingual.PROFILE[lang]}
                   />
                 </TabHeading>
