@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Button, Text, Header, Title, Right, Left, Body, Form, Content } from 'native-base';
+import { Container, Button, Text, Header, Title, Right, Left, Body, Form, Content, Icon } from 'native-base';
 import { View, ImageBackground, Image, TouchableHighlight, Alert } from "react-native";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { UnderlinedInput } from "../../components/inputs";
@@ -13,6 +13,11 @@ function addDoctor(doctor, props){
 
 function editDoctor(doctor, props) {
   props.navigation.state.params.editDoctor(doctor, props.navigation.state.params.index)
+  props.navigation.goBack();
+}
+
+function delDoctor(doctor, props) {
+  props.navigation.state.params.delDoctor(doctor);
   props.navigation.goBack();
 }
 
@@ -52,16 +57,16 @@ class AddDoctor extends Component {
     const {lang} = this.state
     return (
       <Container>
-        <Header>
+        <Header style={{backgroundColor: 'white'}}>
           <Left>
+            <Text onPress={() => this.props.navigation.goBack()} style={styles.headerText}>
+              <Icon name='arrow-back' style={styles.headerText}/>
+            </Text>
           </Left>
           <Body>
-            <Title>{item ? 'Edit Doctor' : 'Add Doctor'}</Title>
+            <Title style={{color:'blue', marginLeft: 20}}>{item ? 'Edit Doctor' : 'Add Doctor'}</Title>
           </Body>
           <Right>
-            <Button onPress={() => this.props.navigation.goBack()} transparent>
-              <Text>{multilingual.CANCEL[lang]}</Text>
-            </Button>
           </Right>
         </Header>
         <Content style={styles.content}>
@@ -97,13 +102,18 @@ class AddDoctor extends Component {
             />
             <View style={styles.separator} />
 
-            <Button rounded onPress={() => item ? this.doctor.type && this.doctor.name && this.doctor.number
-                                          ? editDoctor(this.doctor, this.props) : Alert.alert("Field should not be empty.")
-                                          : this.doctor.type && this.doctor.name && this.doctor.number
-                                          ? addDoctor(this.doctor, this.props) : Alert.alert("Field should not be empty.")
-            }>
-              <Text>{multilingual.SAVE[lang]}</Text>
-            </Button>
+            <View style={styles.buttonContainer}>
+              {item && <Button style={styles.delButton} onPress={() => delDoctor(item, this.props)}>
+                <Text>{multilingual.DELETE_TASK[lang]}</Text>
+              </Button>}
+              <Button style={styles.utdButton} onPress={() => item ? this.doctor.type && this.doctor.name && this.doctor.number
+                                            ? editDoctor(this.doctor, this.props) : Alert.alert("Field should not be empty.")
+                                            : this.doctor.type && this.doctor.name && this.doctor.number
+                                            ? addDoctor(this.doctor, this.props) : Alert.alert("Field should not be empty.")
+              }>
+                <Text>{multilingual.UPDATE_TASK[lang]}</Text>
+              </Button>
+            </View>
           </Form>
         </Content>
       </Container>
@@ -121,7 +131,36 @@ const styles = {
   },
   content: {
     padding: 16
-  }
+  },
+  headerText: {
+    color: 'blue',
+  },
+  buttonContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignContent: 'center',
+    justifyContent: 'center',
+    marginTop: 60,
+  },
+  delButton: {
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#ea1b36',
+    marginHorizontal: 10,
+    alignItems: 'center',
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
+  utdButton: {
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#0d9ddb',
+    marginHorizontal: 10,
+    alignItems: 'center',
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
 };
 
 export default AddDoctor;

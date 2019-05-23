@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Button, Text, Header, Title, Right, Left, Body, Form, Content, Item } from 'native-base';
+import { Container, Button, Text, Header, Title, Right, Left, Body, Form, Content, Item, Icon } from 'native-base';
 import { View, ImageBackground, Image, TouchableHighlight, Alert } from "react-native";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { UnderlinedInput } from "../../components/inputs";
@@ -12,7 +12,12 @@ function addDiagnosis(diagnosis, props){
 }
 
 function updateDiagnosis(diagnosis, props) {
-  props.navigation.state.params.editDiagnosis(diagnosis, props.navigation.state.params.index)
+  props.navigation.state.params.editDiagnosis(diagnosis, props.navigation.state.params.index);
+  props.navigation.goBack();
+}
+
+function delDiagnosis(item, props) {
+  props.navigation.state.params.delDiagnosis(item);
   props.navigation.goBack();
 }
 
@@ -40,16 +45,16 @@ class AddDiagnosis extends Component {
     const {lang} = this.state
     return (
       <Container>
-        <Header>
+        <Header style={{backgroundColor: 'white'}}>
           <Left>
+            <Text onPress={() => this.props.navigation.goBack()} style={styles.headerText}>
+              <Icon name='arrow-back' style={styles.headerText}/>
+            </Text>
           </Left>
           <Body>
-            <Title>{item ? 'Edit Diagnosis' : 'Add Diagnosis'}</Title>
+            <Title style={{color:'blue', marginLeft: 20}}>{item ? 'Edit Diagnosis' : 'Add Diagnosis'}</Title>
           </Body>
           <Right>
-            <Button onPress={() => this.props.navigation.goBack()} >
-              <Text>{multilingual.CANCEL[lang]}</Text>
-            </Button>
           </Right>
         </Header>
         <Content style={styles.content}>
@@ -64,13 +69,17 @@ class AddDiagnosis extends Component {
               onChangeText={(text) => this.updateName(text)}
             />
             <View style={styles.separator} />
-
-            <Button rounded onPress={() => item
-              ? this.diagnosis.name ? updateDiagnosis(this.diagnosis, this.props) : Alert.alert('Field should not be empty.')
-              : this.diagnosis.name ? addDiagnosis(this.diagnosis, this.props) : Alert.alert('Field should not be empty.')
-            }>
-              <Text>{multilingual.SAVE[lang]}</Text>
-            </Button>
+            <View style={styles.buttonContainer}>
+              {item && <Button style={styles.delButton} onPress={() => delDiagnosis(item, this.props)}>
+                <Text>{multilingual.DELETE_TASK[lang]}</Text>
+              </Button>}
+              <Button style={styles.utdButton} onPress={() => item
+                ? this.diagnosis.name ? updateDiagnosis(this.diagnosis, this.props) : Alert.alert('Field should not be empty.')
+                : this.diagnosis.name ? addDiagnosis(this.diagnosis, this.props) : Alert.alert('Field should not be empty.')
+              }>
+                <Text>{multilingual.UPDATE_TASK[lang]}</Text>
+              </Button>
+            </View>
           </Form>
         </Content>
       </Container>
@@ -88,7 +97,36 @@ const styles = {
   },
   content: {
     padding: 16
-  }
+  },
+  headerText: {
+    color: 'blue',
+  },
+  buttonContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignContent: 'center',
+    justifyContent: 'center',
+    marginTop: 60,
+  },
+  delButton: {
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#ea1b36',
+    marginHorizontal: 10,
+    alignItems: 'center',
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
+  utdButton: {
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#0d9ddb',
+    marginHorizontal: 10,
+    alignItems: 'center',
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
 };
 
 export default AddDiagnosis;

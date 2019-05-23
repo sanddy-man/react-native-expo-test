@@ -535,6 +535,7 @@ class Dashboard extends Component {
     const index = this.state.medications.indexOf(item);
     this.props.navigation.navigate("_addMedication", {
       editMedication:this.editMedication.bind(this),
+      delMedication:this.delMedication.bind(this),
       item,
       index
     });
@@ -617,6 +618,7 @@ class Dashboard extends Component {
     const index = this.state.diagnosis.indexOf(item);
     this.props.navigation.navigate("_addDiagnosis", {
       editDiagnosis:this.editDiagnosis.bind(this),
+      delDiagnosis:this.delDiagnosis.bind(this),
       item,
       index
     });
@@ -680,6 +682,7 @@ class Dashboard extends Component {
     const index = this.state.doctors.indexOf(item)
     this.props.navigation.navigate("_addDoctor", {
       editDoctor: this.editDoctor.bind(this),
+      delDoctor: this.delDoctor.bind(this),
       item,
       index,
     })
