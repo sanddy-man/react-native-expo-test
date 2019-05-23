@@ -47,12 +47,12 @@ class AddDiagnosis extends Component {
       <Container>
         <Header style={{backgroundColor: 'white'}}>
           <Left>
-            <Text onPress={() => this.props.navigation.goBack()} style={styles.headerText}>
+            <Text onPress={() => this.props.navigation.goBack()} >
               <Icon name='arrow-back' style={styles.headerText}/>
             </Text>
           </Left>
           <Body>
-            <Title style={{color:'blue', marginLeft: 20}}>{item ? 'Edit Diagnosis' : 'Add Diagnosis'}</Title>
+            <Title style={{color:'#0d9ddb', marginLeft: 20}}>{item ? 'Edit Diagnosis' : 'Add Diagnosis'}</Title>
           </Body>
           <Right>
           </Right>
@@ -77,7 +77,7 @@ class AddDiagnosis extends Component {
                 ? this.diagnosis.name ? updateDiagnosis(this.diagnosis, this.props) : Alert.alert('Field should not be empty.')
                 : this.diagnosis.name ? addDiagnosis(this.diagnosis, this.props) : Alert.alert('Field should not be empty.')
               }>
-                <Text>{multilingual.UPDATE_TASK[lang]}</Text>
+                <Text>{item ? 'Edit Diagnosis' : 'Add Diagnosis'}</Text>
               </Button>
             </View>
           </Form>
@@ -99,7 +99,7 @@ const styles = {
     padding: 16
   },
   headerText: {
-    color: 'blue',
+    color: '#0d9ddb',
   },
   buttonContainer: {
     flex: 1,
