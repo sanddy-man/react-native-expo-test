@@ -377,9 +377,19 @@ const ADD_DIAGNOSIS = {
   es: 'Agregar más diagnósticos',
 }
 
+const EDIT_DIAGNOSIS = {
+  en: 'Edit Diagnosis',
+  es: 'Editar más diagnósticos',
+}
+
 const ADD_DOCTOR = {
   en: 'Add Doctor',
   es: 'Agregar más médicos',
+}
+
+const EDIT_DOCTOR = {
+  en: 'Edit Doctor',
+  es: 'Editar más médicos',
 }
 
 const DIAGNOSIS = {
@@ -395,6 +405,16 @@ const ENTER_CHILD_DIAGNOSIS = {
 const SAVE = {
   en: 'Save',
   es: 'Guardar',
+}
+
+const ADD_MEDICATION = {
+  en: 'Add Medication',
+  es: 'Agregar Medicamento',
+}
+
+const EDIT_MEDICATION = {
+  en: 'Edit Medication',
+  es: 'Editar Medicamento',
 }
 
 const MEDICATION = {
@@ -559,7 +579,11 @@ export default {
   PROFILE,
   CHILD,
   ADD_DIAGNOSIS,
+  EDIT_DIAGNOSIS,
   ADD_DOCTOR,
+  EDIT_DOCTOR,
+  ADD_MEDICATION,
+  EDIT_MEDICATION,
   DIAGNOSIS,
   ENTER_CHILD_DIAGNOSIS,
   SAVE,

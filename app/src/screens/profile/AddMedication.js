@@ -59,15 +59,15 @@ class AddMedication extends Component {
     return (
       <Container>
         <Header style={{backgroundColor: 'white'}}>
-          <Left>
+          <Left style={styles.marginleft}>
             <Text onPress={() => this.props.navigation.goBack()}>
               <Icon name='arrow-back' style={styles.headerText}/>
             </Text>
           </Left>
-          <Body>
-            <Title style={{color:'#0d9ddb', marginLeft: 20}}>{item ? 'Edit Medication' : 'Add Medication'}</Title>
+          <Body style={{marginLeft: 30}}>
+            <Title style={styles.headerText}>{item ? 'Edit Medication' : 'Add Medication'}</Title>
           </Body>
-          <Right>
+          <Right style={styles.marginleft}>
           </Right>
         </Header>
         <Content style={styles.content}>
@@ -112,7 +112,7 @@ class AddMedication extends Component {
                                             : this.medication.prescription_name && this.medication.dosage && this.medication.dosage_instructions
                                             ? addMedication(this.medication, this.props) : Alert.alert("Field should not be empty.")
               }>
-                <Text>{item ? 'Edit Medication' : 'Add Medication'}</Text>
+                <Text>{item ? multilingual.EDIT_MEDICATION[lang] : multilingual.ADD_MEDICATION[lang]}</Text>
               </Button>
             </View>
           </Form>
@@ -125,6 +125,9 @@ class AddMedication extends Component {
 const styles = {
   separator: {
     marginTop: 20
+  },
+  marginleft: {
+    marginLeft: 20
   },
   submitButtonContainer: {
     alignSelf: "center",

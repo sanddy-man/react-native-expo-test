@@ -46,15 +46,15 @@ class AddDiagnosis extends Component {
     return (
       <Container>
         <Header style={{backgroundColor: 'white'}}>
-          <Left>
+          <Left style={styles.marginleft}>
             <Text onPress={() => this.props.navigation.goBack()} >
               <Icon name='arrow-back' style={styles.headerText}/>
             </Text>
           </Left>
-          <Body>
-            <Title style={{color:'#0d9ddb', marginLeft: 20}}>{item ? 'Edit Diagnosis' : 'Add Diagnosis'}</Title>
+          <Body style={{marginLeft: 55}}>
+            <Title style={styles.headerText}>{item ? 'Edit Diagnosis' : 'Add Diagnosis'}</Title>
           </Body>
-          <Right>
+          <Right style={styles.marginleft}>
           </Right>
         </Header>
         <Content style={styles.content}>
@@ -77,7 +77,7 @@ class AddDiagnosis extends Component {
                 ? this.diagnosis.name ? updateDiagnosis(this.diagnosis, this.props) : Alert.alert('Field should not be empty.')
                 : this.diagnosis.name ? addDiagnosis(this.diagnosis, this.props) : Alert.alert('Field should not be empty.')
               }>
-                <Text>{item ? 'Edit Diagnosis' : 'Add Diagnosis'}</Text>
+                <Text>{item ? multilingual.EDIT_DIAGNOSIS[lang] : multilingual.ADD_DIAGNOSIS[lang]}</Text>
               </Button>
             </View>
           </Form>
@@ -90,6 +90,9 @@ class AddDiagnosis extends Component {
 const styles = {
   separator: {
     marginTop: 20
+  },
+  marginleft: {
+    marginLeft: 20
   },
   submitButtonContainer: {
     alignSelf: "center",
