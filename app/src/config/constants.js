@@ -7,6 +7,7 @@ import { SecureStore } from "expo";
 // export const API_ROOT = "http://192.168.0.104/nicu/v1";
 // export const API_ROOT = "http://127.0.0.1/nicu/v1";
 export const API_ROOT = "http://192.168.1.105/nicu/v1";
+export const STATIC_ROOT = "http://192.168.1.105/temp-images/";
 export const APP_NAME = "Qolty";
 export const WELCOME_TO = "WELCOME TO";
 export const INTRO_TEXT_1 =

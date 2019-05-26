@@ -52,7 +52,7 @@ class Dashboard extends Component {
       wellnessCategories: [],
       medications: [],
       diagnosis: [],
-      doctors: []
+      doctors: [],
     };
   }
 
@@ -713,6 +713,47 @@ class Dashboard extends Component {
     }).done();
   }
 
+  uploadImageFile(uri, who) {
+    // Display the camera to the user and wait for them to take a photo or to cancel
+    // the action
+
+    // ImagePicker saves the taken photo to disk and returns a local URI to it
+    let localUri = uri;
+    let filename = localUri.split('/').pop();
+
+    // Infer the type of the image
+    let match = /\.(\w+)$/.exec(filename);
+    let type = match ? `image/${match[1]}` : `image`;
+
+    // Upload the image using the fetch and FormData APIs
+    let formData = new FormData();
+    // Assume "photo" is the name of the form field the server expects
+    formData.append('myFile', { uri: localUri, name: filename, type });
+    formData.append('who', who);
+
+    SecureStore.getItemAsync("jwt").then((value) => {
+      if (value != null){
+        fetch(Constants.API_ROOT + "/uploadImageFile", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            "Authorization": "Bearer " + value,
+          },
+          body: formData,
+        });
+      }
+    }).done();
+
+    // return await fetch(Constants.API_ROOT + "/uploadImageFile", {
+    //   method: 'POST',
+    //   body: formData,
+    //   header: {
+    //     'content-type': 'multipart/form-data',
+    //   },
+    // }).then((responseJson) => {})
+    //   .catch((error) => { console.error(error); });
+  }
+
   save() {
     this.setState({ profileFormBusy: true });
     setTimeout(() => {
@@ -899,6 +940,7 @@ class Dashboard extends Component {
                 profileData={this.state.profile}
                 formBusy={this.state.profileFormBusy}
                 name={this.state.profileName}
+                uploadImageFile={(uri, who) => this.uploadImageFile(uri, who)}
                 openSettings={() => this.openSettings()}
                 onNameChangeText={text => this.updateProfileNameField(text)}
                 mobileNumber={this.state.profileMobileNumber}

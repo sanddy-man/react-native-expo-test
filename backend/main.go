@@ -4,6 +4,8 @@ import (
 	"flag"
 	"log"
 	"time"
+	"fmt"
+  "io/ioutil"
 
 	// "fmt"
 	// "errors"
@@ -35,6 +37,8 @@ type Profile struct {
 	Email string `json:"email" binding:"required"`
 	Name  string `json:"name" binding:"required"`
 	Dob   string `json:"dob" binding:"required"`
+	UserImage string `json:"userImage" binding:"required"`
+	BabyImage string `json:"babyImage" binding:"required"`
 }
 
 type Login struct {
@@ -805,13 +809,13 @@ func loadData(tableName string, userId string) ([]map[string]string, error) {
 func loadProfile(userId string) (Profile, error) {
 	var profile Profile
 
-	stmtOut, err := db.Prepare("SELECT User.email, Baby.name, Baby.dob from User inner join Baby on User.user_id=Baby.parent_id WHERE User.public_id = ?")
+	stmtOut, err := db.Prepare("SELECT User.email, Baby.name, Baby.dob, User.image, Baby.image from User inner join Baby on User.user_id=Baby.parent_id WHERE User.public_id = ?")
 	if err != nil {
 		return profile, err
 	}
 	defer stmtOut.Close()
 
-	err = stmtOut.QueryRow(userId).Scan(&profile.Email, &profile.Name, &profile.Dob)
+	err = stmtOut.QueryRow(userId).Scan(&profile.Email, &profile.Name, &profile.Dob, &profile.UserImage, &profile.BabyImage)
 	if err != nil {
 		return profile, err
 	}
@@ -1316,6 +1320,102 @@ func createCheckList(c *gin.Context) {
 	c.JSON(200, gin.H{"logData": checkListRequest, "error": nil})
 }
 
+func uploadImageFile(c *gin.Context) {
+	log.Println("upload start")
+	file, handler , err := c.Request.FormFile("myFile")
+	if err != nil {
+      fmt.Println("Error Retrieving the File")
+      fmt.Println(err)
+      return
+  }
+  defer file.Close()
+
+  fmt.Println("Uploaded File: %+v\n", handler.Filename)
+  fmt.Println("File Size: %+v\n", handler.Size)
+  fmt.Println("MIME Header: %+v\n", handler.Header)
+
+	fileName := strings.Split(handler.Filename, ".")[0] + "*.jpg"
+  // Create a temporary file within our temp-images directory that follows
+  // a particular naming pattern
+  tempFile, err := ioutil.TempFile("temp-images", fileName)
+  if err != nil {
+      fmt.Println(err)
+  }
+  defer tempFile.Close()
+
+	dbImageFileName := strings.Split(tempFile.Name(), "\\")[1]
+  // read all of the contents of our uploaded file into a
+  // byte array
+  fileBytes, err := ioutil.ReadAll(file)
+  if err != nil {
+      fmt.Println(err)
+  }
+  // write this byte array to our temporary file
+  tempFile.Write(fileBytes)
+
+	if err := c.Request.ParseForm(); err != nil {
+      fmt.Println("ParseForm() err: %v", err)
+      return
+  }
+  who := c.Request.FormValue("who")
+  fmt.Println("who = %s\n", who)
+
+	// Updating database with image files
+	claims := jwt.ExtractClaims(c)
+	public_id := claims["id"]
+
+	log.Println(public_id)
+
+	stmtOut, err := db.Prepare("SELECT user_id from User WHERE public_id = ?")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer stmtOut.Close()
+
+	var user_id int
+
+	err = stmtOut.QueryRow(public_id).Scan(&user_id)
+	if err != nil {
+		fmt.Println(err)
+	}
+	log.Println(user_id)
+
+	if (who == "Baby") {
+		stmtEdit, err := db.Prepare("UPDATE Baby SET image=? WHERE parent_id=?")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+			log.Println(err)
+			return
+		}
+		defer stmtEdit.Close()
+
+		_, err = stmtEdit.Exec(dbImageFileName, user_id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+			log.Println(err)
+			return
+		}
+	} else if (who == "User") {
+		stmtEdit, err := db.Prepare("UPDATE User SET image=? WHERE user_id=?")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+			log.Println(err)
+			return
+		}
+		defer stmtEdit.Close()
+
+		_, err = stmtEdit.Exec(dbImageFileName, user_id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error handling request."})
+			log.Println(err)
+			return
+		}
+	}
+
+  // return that we have successfully uploaded our file!
+  fmt.Println("Successfully Uploaded File\n")
+}
+
 func main() {
 	var err error
 
@@ -1377,7 +1477,7 @@ func main() {
 
 	// Initiate the HTTPS server.
 	router := gin.Default()
-
+	router.StaticFS("/temp-images", http.Dir("G:/react-native-expo-test/backend/temp-images"))
 	// TODO: try later with https
 	// securityConfig := secure.DefaultConfig()
 	// router.Use(secure.New(securityConfig))
@@ -1508,6 +1608,7 @@ func main() {
 		nicu_router.POST("/addDoctor", addDoctor)
 		nicu_router.POST("/editDoctor", editDoctor)
 		nicu_router.POST("/delDoctor", delDoctor)
+		nicu_router.POST("/uploadImageFile", uploadImageFile)
 	}
 
 	if *isLocal {

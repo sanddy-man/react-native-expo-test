@@ -7,27 +7,28 @@ import { ImagePicker, Permissions, SecureStore } from 'expo';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import ActionSheet from 'react-native-actionsheet'
 import multilingual from "../../config/multilingual";
+import { Constants } from "../../config";
 
 class Profile extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      babyImage: null,
-      parentImage: null,
+      babyImage: Constants.STATIC_ROOT + this.props.profileData.babyImage,
+      parentImage: Constants.STATIC_ROOT + this.props.profileData.userImage,
     };
   }
 
-  async componentDidMount() {
-    const [babyImage, parentImage] = await Promise.all([
-      SecureStore.getItemAsync(`${this.props.profileData.email.replace('@', '')}-babyImage`),
-      SecureStore.getItemAsync(`${this.props.profileData.email.replace('@', '')}-parentImage`),
-    ]);
-    this.setState({
-      babyImage,
-      parentImage,
-    })
-  }
+  // async componentDidMount() {
+  //   const [babyImage, parentImage] = await Promise.all([
+  //     SecureStore.getItemAsync(`${this.props.profileData.email.replace('@', '')}-babyImage`),
+  //     SecureStore.getItemAsync(`${this.props.profileData.email.replace('@', '')}-parentImage`),
+  //   ]);
+  //   this.setState({
+  //     babyImage: Constants.STATIC_ROOT + this.props.profileData.babyImage,
+  //     parentImage: Constants.STATIC_ROOT + this.props.profileData.userImage,
+  //   })
+  // }
 
   showActionSheet = (index) => {
     this.index = index
@@ -80,17 +81,21 @@ class Profile extends Component {
 
     if (!result.cancelled) {
       if (this.index === 1) {
-        SecureStore.setItemAsync(`${this.props.profileData.email.replace('@', '')}-babyImage`, result.uri);
-        this.setState({ babyImage: result.uri })
+        // SecureStore.setItemAsync(`${this.props.profileData.email.replace('@', '')}-babyImage`, result.uri);
+        this.setState({ babyImage: result.uri });
+        this.props.uploadImageFile(result.uri, 'Baby');
       } else {
-        SecureStore.setItemAsync(`${this.props.profileData.email.replace('@', '')}-babyImage`, result.uri);
-        this.setState({ parentImage: result.uri })
+        // SecureStore.setItemAsync(`${this.props.profileData.email.replace('@', '')}-parentImage`, result.uri);
+        this.setState({ parentImage: result.uri });
+        this.props.uploadImageFile(result.uri, 'User');
       }
     }
   };
 
   render() {
     const props = this.props;
+    // const userImage = Constants.STATIC_ROOT + props.profileData.userImage;
+    // const babyImage = Constants.STATIC_ROOT + props.profileData.babyImage;
 
     let babyProfilePer = 0;
     if (props.profileData.name) {
